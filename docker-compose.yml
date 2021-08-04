@@ -1,0 +1,29 @@
+version: "3.7"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    dns: 127.0.0.1
+    network_mode: host
+    environment:
+      TZ: 'Europe/Brussels'
+      PROXY_LOCATION: pihole
+    volumes:
+      - './etc-pihole/:/etc/pihole/'
+      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+  
+  unbound:
+    container_name: unbound_no_cache
+    image: unbound_no_cache
+    restart: unless-stopped
+
+networks:
+  pihole:
+    name: pihole
